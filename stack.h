@@ -2,6 +2,9 @@
 #include "stdint.h"
 #include "stdlib.h"
 #include "string.h"
+
+char* tmp_elem = NULL;
+
 typedef struct
 {
     size_t stack_size;
@@ -13,11 +16,9 @@ typedef struct
 stack* create_stack(size_t);
 void delete_stack(stack*);
 int stack_push(stack*,char*);
-int stack_pop(stack*);
-int stack_read_elem(stack*,size_t,FILE*);
-int stack_read(stack*,FILE*);
+char* stack_pop(stack*);
 int stack_is_empty(stack*);
-int stack_top(stack*,FILE*);
+char* stack_top(stack*);
 
 stack* create_stack(size_t data_len)
 {
@@ -34,6 +35,8 @@ void delete_stack(stack* st)
         free(st->data[i]);
     free(st->data);
     free(st);
+    if(tmp_elem != NULL)
+        free(tmp_elem);
 }
 
 int stack_push(stack* st,char* get_data)
@@ -60,38 +63,21 @@ int stack_push(stack* st,char* get_data)
     return 0;
 }
 
-int stack_pop(stack* st)
+char* stack_pop(stack* st)
 {
     if(st->stack_size > 0)
     {
+        tmp_elem = (char*)malloc(sizeof(char*) * st->data_len);
+        for(size_t i = 0; i < st->data_len; i++)
+            tmp_elem[i] = st->data[st->next_elem][i];
         free(st->data[st->next_elem]);
         st->next_elem--;
         st->stack_size--;
         st->data =(char**)realloc(st->data,sizeof(char*) * st->stack_size);
-        return 1;
+        return tmp_elem;
     }
-    return 0;
-}
-
-int stack_read_elem(stack* st, size_t element_num, FILE* fp)
-{
-    if(st->stack_size > 0)
-    {
-        fprintf(fp,"[ELEMENT %ld]: %s\n",st->next_elem,st->data[element_num]);
-        return 1;
-    }
-    return 0;
-}
-
-int stack_read(stack* st,FILE* fp)
-{
-    if(st->stack_size > 0)
-    {
-        for(size_t i = 0; i < st->stack_size; i++)
-            fprintf(fp,"[ELEMENT %ld]: %s\n",i,st->data[i]);
-        return 1;
-    }
-    return 0;
+    else
+        return "[STACK_EMPTY]";
 }
 
 int stack_is_empty(stack* st)
@@ -102,13 +88,10 @@ int stack_is_empty(stack* st)
         return 0;
 }
 
-int stack_top(stack* st,FILE* fp)
+char* stack_top(stack* st)
 {
     if(st->stack_size > 0)
-    {
-        fprintf(fp,"%s\n",st->data[st->next_elem]);
-        return 1;
-    }
-    else
-        return 0;
+        return st->data[st->next_elem];
+    else 
+        return "[STACK_EMPTY]";
 }
