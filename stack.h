@@ -16,6 +16,8 @@ int stack_push(stack*,char*);
 int stack_pop(stack*);
 int stack_read_elem(stack*,size_t,FILE*);
 int stack_read(stack*,FILE*);
+int stack_is_empty(stack*);
+int stack_top(stack*,FILE*);
 
 stack* create_stack(size_t data_len)
 {
@@ -90,4 +92,23 @@ int stack_read(stack* st,FILE* fp)
         return 1;
     }
     return 0;
+}
+
+int stack_is_empty(stack* st)
+{
+    if(st->stack_size == 0)
+        return 1;
+    else
+        return 0;
+}
+
+int stack_top(stack* st,FILE* fp)
+{
+    if(st->stack_size > 0)
+    {
+        fprintf(fp,"%s\n",st->data[st->next_elem]);
+        return 1;
+    }
+    else
+        return 0;
 }
