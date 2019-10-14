@@ -65,7 +65,7 @@ int stack_push(stack* st,char* get_data)
 
 char* stack_pop(stack* st)
 {
-    if(st->stack_size > 0)
+    if(stack_is_empty(st) == 0)
     {
         tmp_elem = (char*)malloc(sizeof(char*) * st->data_len);
         for(size_t i = 0; i < st->data_len; i++)
